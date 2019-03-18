@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
+import javax.servlet.ServletException
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
@@ -57,6 +58,8 @@ class SecurityBeforeFilter : OncePerRequestFilter() {
                 // 放行
                 log.debug("验证通过 {}", requestURL)
                 filterChain.doFilter(request, response)
+            } catch (e: ServletException) {
+                throw e
             } catch (e: ExpiredJwtException) {
                 // 已过期异常
                 JsonUtils.sendJson(response, objectMapper.writeValueAsString(R<Any>(ResultStatusCodes.SIGNATURE_EXPIRED_EXCEPTION)))
